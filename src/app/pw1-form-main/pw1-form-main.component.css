@@ -1,0 +1,138 @@
+
+label
+{
+  display: block;
+  margin-top: 15px;
+  margin-bottom: 0px;
+}
+
+input:hover, textarea:hover, .buttons:hover:enabled
+{
+  outline-width: 1px;
+  outline-style: dotted;
+  outline-color: rgba(0, 0, 255, 255);
+}
+
+.textinput, .textinput_req
+{
+  width: 400px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 255);
+}
+.textinput_req.ng-dirty.ng-valid
+{
+  border-right-width: 10px;
+  border-color: rgba(0, 255, 0, 255);
+}
+.textinput_req.ng-dirty.ng-invalid
+{
+  border-right-width: 10px;
+  border-color: rgba(255, 0, 0, 255);
+}
+
+.buttons
+{
+  display: inline-block;
+  width: 195px;
+  height: 30px;
+  color: rgba(255, 255, 255, 255);
+  text-shadow: rgba(0, 0, 0, 255);
+  font-weight: bold;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+  outline-style: none;
+  outline-width: 0px;
+}
+
+.detail_chars
+{
+  display: inline;
+  font-size: 12px;
+}
+
+#PW1_container
+{
+  display: inline-block;
+  background-color: rgba(250, 250, 248, 255);
+  margin: 15px;
+  padding: 30px;
+  padding-top: 15px;
+  border-width: 1px;
+  border-radius: 30px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 255);
+}
+
+#dateTimeDiv
+{
+  display: inline-block;
+}
+
+#dateTimeErrorDiv
+{
+  margin-left: 6px;
+  display: inline-block;
+  color: rgba(255, 0, 0, 255);
+  font-weight: bold;
+}
+
+#date, #time
+{
+  border-width: 1px;
+  border-style: solid;
+}
+#date
+{
+  border-right-width: 0px;
+}
+
+#buttonGroup
+{
+  margin-top: 25px;
+  display: block;
+}
+
+#buttonSubmit
+{
+  margin-right: 14px;
+  background-color: rgba(0, 200, 0, 255);
+}
+#buttonSubmit:disabled
+{
+  color: rgba(230, 230, 230, 255);
+  background-color: rgba(150, 200, 150, 255);
+  text-shadow: rgba(150, 150, 150, 255);
+  border-style: hidden;
+}
+#buttonSubmit:active
+{
+  background-color: rgba(150, 255, 150, 255);
+}
+
+#buttonReset
+{
+  background-color: rgba(255, 0, 0, 255);
+}
+#buttonReset:disabled
+{
+  color: rgba(230, 230, 230, 255);
+  background-color: rgba(200, 150, 150, 255);
+  text-shadow: rgba(150, 150, 150, 255);
+  border-style: hidden;
+}
+#buttonReset:active
+{
+  background-color: rgba(255, 200, 200, 255);
+}
+
+#response_success
+{
+  color: rgba(0, 180, 0, 255);
+  font-weight: bold;
+}
+#response_failure
+{
+  color: rgba(255, 0, 0, 255);
+  font-weight: bold;
+}
+

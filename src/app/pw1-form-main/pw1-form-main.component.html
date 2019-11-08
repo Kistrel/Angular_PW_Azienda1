@@ -1,0 +1,52 @@
+
+<div id="PW1_container">
+  <form [formGroup]="PW1_form" (ngSubmit)="onSubmit()">
+    <label for="description">*Descrizione: <div class="detail_chars">(massimo {{iDetail_MaxLength}} caratteri)</div></label>
+    <input type="text" id="description" class="textinput_req" autocomplete="off" maxlength="{{iDetail_MaxLength}}" [readonly]="PW1_WorkerData.iLastPostResponse == 0"
+    formControlName="description" (input)="PW1_data.description = this.PW1_form.get('description').value" value={{PW1_data.description}}>
+
+    <label for="detail">Dettagli: <div class="detail_chars">(disponibili {{iDescription_MaxLength-(PW1_data.dettaglio || '').length}} caratteri di {{iDescription_MaxLength}} massimo)</div></label>
+    <textarea rows='4' cols='50' id="detail" class="textinput" autocomplete="off" maxlength="{{iDescription_MaxLength}}" [readonly]="PW1_WorkerData.iLastPostResponse == 0"
+    formControlName="detail" (input)="PW1_data.dettaglio = this.PW1_form.get('detail').value"></textarea>
+
+    <label for="time"><label for="date">*Data e ora:</label></label>
+    <div id="dateTimeDiv">
+      <input type="date" id="date" autocomplete="off" formControlName="date" [readonly]="PW1_WorkerData.iLastPostResponse == 0"
+      #date (input)="PW1_dateTimeRef = [date, time]">
+      <input type="time" id="time" autocomplete="off" formControlName="time" [readonly]="PW1_WorkerData.iLastPostResponse == 0"
+      #time (input)="PW1_dateTimeRef = [date, time]">
+      <div *ngIf="PW1_dateTimeError.length > 0" class="detail_chars" id="dateTimeErrorDiv">
+        {{PW1_dateTimeError}}
+      </div>
+    </div>
+
+    <label for="price">*Prezzo (€):</label>
+    <input type="text" id="price" class="textinput_req" #price (input)="PW1_ValidatePrice(price)" [readonly]="PW1_WorkerData.iLastPostResponse == 0"
+    autocomplete="off" formControlName="price" (keyup)="PW1_KeyUpPrice(price)" (focus)="PW1_KeyUpPrice(price)">
+
+    <label for="worker">*Manutentore/trice da assegnare: <div *ngIf="PW1_WorkerData.list.length == 0" class="detail_chars">(sto caricando i nomi dal server)</div></label>
+    <input type="select" id="worker" class="textinput_req" formControlName="worker" list='worker_list' placeholder='Click per selezionare'
+    [readonly]="PW1_WorkerData.iLastPostResponse == 0" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off">
+    <datalist id="worker_list">
+      <option *ngFor="let item of PW1_WorkerData.getList()">{{item[0]}}</option>
+    </datalist>
+
+    <div id="buttonGroup">
+      <button type="submit" id="buttonSubmit" class="buttons" [disabled]="(!PW1_form.valid) || (PW1_WorkerData.iLastPostResponse == 0)">Invia</button>
+      <button type="reset" id="buttonReset" class="buttons" [disabled]="PW1_WorkerData.iLastPostResponse == 0" (click)="PW1_WorkerData.iLastPostResponse = -1">Cancella</button>
+    </div>
+    <div class="detail_chars" *ngIf="PW1_WorkerData.iLastPostResponse == -1">I campi contrassegnati con * sono obbligatori</div>
+    <div class="detail_chars" *ngIf="PW1_WorkerData.iLastPostResponse == 0">Invio in corso...</div>
+    <div class="detail_chars" id="response_success" *ngIf="PW1_WorkerData.iLastPostResponse == 1">Dati inviati con successo</div>
+    <div class="detail_chars" id="response_failure" *ngIf="PW1_WorkerData.iLastPostResponse == 2">Invio fallito</div>
+  </form>
+</div>
+
+<!-- Debugging:
+  <div>{{PW1_form.get('description').valid}}</div>
+  <div>{{PW1_form.get('detail').valid}}</div>
+  <div>{{PW1_form.get('date').valid}}</div>
+  <div>{{PW1_form.get('time').valid}}</div>
+  <div>{{PW1_form.get('price').valid}}</div>
+  <div>{{PW1_form.get('worker').valid}}</div>
+-->
