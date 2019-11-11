@@ -16,8 +16,7 @@ export class NothingFoundComponent implements OnInit {
   selfBackColor: number[] = [255, 255, 255];
 
   selfTransition_Color: number = 2.0;
-  selfTransition_Top: number = 2.0;
-  selfTransition_Left: number = 2.0;
+  selfTransition_Position: number = 2.0;
   selfTransition_Top_Ended: boolean = true;
   selfTransition_Left_Ended: boolean = true;
 
@@ -88,17 +87,25 @@ export class NothingFoundComponent implements OnInit {
       this.selfRef.nativeElement.children[0].style.left = this.selfPos_Curr[0]+'px';
       this.selfRef.nativeElement.children[0].style.top = this.selfPos_Curr[1]+'px';
 
-      //Set the bools
-      this.selfTransition_Top_Ended = false;
-      this.selfTransition_Left_Ended = false;
+      //Unset this, as it won't be needed anymore
+      this.everySecondSub.unsubscribe();
 
       //And set the speed
-      this.selfTransition_Top = Math.round(10*Math.abs(this.selfPos_Prev[0]-this.selfPos_Curr[0])/150)/10;
-      this.selfTransition_Left = Math.round(10*Math.abs(this.selfPos_Prev[0]-this.selfPos_Curr[0])/150)/10;
-      this.setTransition();
+      var iDistance = (((this.selfPos_Prev[0]-this.selfPos_Curr[0])**2)+((this.selfPos_Prev[1]-this.selfPos_Curr[1])**2))**(1/2);
 
-      //This won't be needed anymore
-      this.everySecondSub.unsubscribe();
+      if (iDistance > 10)
+      {
+        this.selfTransition_Position = Math.round(10*iDistance/150)/10;
+        this.setTransition();
+
+        //Also, set the bools
+        this.selfTransition_Top_Ended = false;
+        this.selfTransition_Left_Ended = false;
+      }else
+      {
+        //Destination too close to be worth playing the animation; skip it
+        this.setNewPosition();
+      }
     });
   }
 
@@ -141,7 +148,7 @@ export class NothingFoundComponent implements OnInit {
   setNewPosition()
   {
     var
-      iX2: number, iY2: number, iEdge2: number, iDistanceX: number, iDistanceY: number,
+      iX2: number, iY2: number, iEdge2: number, iDistance: number,
       aMirror: number[], aNewPos: number[];
 
     //Find the position simmetrical to selfPos_Prev in respect to selfPos_Curr
@@ -292,13 +299,11 @@ export class NothingFoundComponent implements OnInit {
     this.selfRef.nativeElement.children[0].style.top = this.selfPos_Curr[1]+'px';
 
     //And set the speed
-    iDistanceX = Math.abs(this.selfPos_Prev[0]-this.selfPos_Curr[0]);
-    iDistanceY = Math.abs(this.selfPos_Prev[0]-this.selfPos_Curr[0]);
+    iDistance = (((this.selfPos_Prev[0]-this.selfPos_Curr[0])**2)+((this.selfPos_Prev[1]-this.selfPos_Curr[1])**2))**(1/2);
 
-    if ((((iDistanceX**2)+(iDistanceY**2))**(1/2)) > 5)
+    if (iDistance > 10)
     {
-      this.selfTransition_Top = Math.round(10*iDistanceY/150)/10;
-      this.selfTransition_Left = Math.round(10*iDistanceX/150)/10;
+      this.selfTransition_Position = Math.round(10*iDistance/150)/10;
       this.setTransition();
 
       //Also, set the bools
@@ -343,7 +348,7 @@ export class NothingFoundComponent implements OnInit {
 
   setTransition()
   {
-    this.selfRef.nativeElement.children[0].style.transition = 'all '+this.selfTransition_Color+'s linear 0s, top '+this.selfTransition_Top+'s linear 0s, left '+this.selfTransition_Left+'s linear 0s';
+    this.selfRef.nativeElement.children[0].style.transition = 'all '+this.selfTransition_Color+'s linear 0s, top '+this.selfTransition_Position+'s linear 0s, left '+this.selfTransition_Position+'s linear 0s';
   }
 
   onTransitionEnd(eEvent: TransitionEvent)
