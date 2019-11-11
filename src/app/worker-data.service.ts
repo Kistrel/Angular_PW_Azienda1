@@ -81,7 +81,7 @@ export class WorkerDataService {
         this.iLastPostResponse = 1;
 
         //For testing purposes, to let the user know the last response
-        console.log('Response:');
+        console.log('Response (success):');
         console.log(aResponse);
       },
       (aResponse: any) => //Failure; catchError in .pipe handles known errors, the second argument in .subscribe handles anything else
@@ -89,7 +89,7 @@ export class WorkerDataService {
         this.iLastPostResponse = 2;
 
         //For testing purposes, to let the user know the last response
-        console.log('Response:');
+        console.log('Response (error):');
         console.log(aResponse);
       }
     );

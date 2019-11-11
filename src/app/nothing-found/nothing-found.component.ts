@@ -16,7 +16,10 @@ export class NothingFoundComponent implements OnInit {
   selfBackColor: number[] = [255, 255, 255];
 
   selfTransition_Color: number = 2.0;
-  selfTransition_Margin: number = 2.0;
+  selfTransition_Top: number = 2.0;
+  selfTransition_Left: number = 2.0;
+  selfTransition_Top_Ended: boolean = true;
+  selfTransition_Left_Ended: boolean = true;
 
   everySecond: Observable<number> = timer(0, 2200);
   everySecondSub: any;
@@ -44,41 +47,11 @@ export class NothingFoundComponent implements OnInit {
     return window.innerHeight-this.selfRef.nativeElement.children[0].getBoundingClientRect().height-this.iScrollBarWidth;
   }
 
-  setNewColor()
-  {
-    var
-      iTemp: number = this.randomQty(255),
-      iID: number = this.randomQty(3),
-      iNewVal: number;
-
-    if (Math.abs(this.selfBackColor[iID]-iTemp) <= 50) //This would fail for 127.5, but this particular value shouldn't ever come up
-    {
-      if (iTemp > 127)
-      {
-        iNewVal = iTemp-100;
-      }else
-      {
-        iNewVal = iTemp+100;
-      }
-    }else
-    {
-      iNewVal = iTemp;
-    }
-
-    this.selfTransition_Color = Math.round(10*Math.abs(iNewVal-this.selfBackColor[iID])/75)/10;
-    this.selfBackColor[iID] = iNewVal;
-
-    this.selfRef.nativeElement.children[0].style.backgroundColor = 'rgba('+this.selfBackColor[0]+', '+this.selfBackColor[1]+', '+this.selfBackColor[2]+', 255)';
-    this.selfRef.nativeElement.children[0].style.color = 'rgba('+(255-this.selfBackColor[0])+', '+(255-this.selfBackColor[1])+', '+(255-this.selfBackColor[2])+', 255)';
-
-    this.setTransition();
-  }
-
   ngOnInit() {
     this.everySecondSub = this.everySecond.subscribe((procs) => {
       this.setNewColor();
 
-      this.selfPos_CurrEdge = 1+this.randomQty(3);
+      this.selfPos_CurrEdge = 1+this.randomQty(2);
 
       switch(this.selfPos_CurrEdge)
       {
@@ -103,7 +76,7 @@ export class NothingFoundComponent implements OnInit {
           ];
           break;
 
-        default: //left
+        default: //left; never happens, but still... it may be useful to have the complete roster around
           this.selfPos_Curr = [
             0,
             20+this.randomQty(this.getMaxPosY()-40)
@@ -112,11 +85,16 @@ export class NothingFoundComponent implements OnInit {
       }
 
       //Chart the course
-      this.selfRef.nativeElement.children[0].style.marginLeft = this.selfPos_Curr[0]+'px';
-      this.selfRef.nativeElement.children[0].style.marginTop = this.selfPos_Curr[1]+'px';
+      this.selfRef.nativeElement.children[0].style.left = this.selfPos_Curr[0]+'px';
+      this.selfRef.nativeElement.children[0].style.top = this.selfPos_Curr[1]+'px';
+
+      //Set the bools
+      this.selfTransition_Top_Ended = false;
+      this.selfTransition_Left_Ended = false;
 
       //And set the speed
-      this.selfTransition_Margin = Math.round(10*((((this.selfPos_Prev[0]-this.selfPos_Curr[0])**2)+((this.selfPos_Prev[1]-this.selfPos_Curr[1])**2))**(1/2))/150)/10;
+      this.selfTransition_Top = Math.round(10*Math.abs(this.selfPos_Prev[0]-this.selfPos_Curr[0])/150)/10;
+      this.selfTransition_Left = Math.round(10*Math.abs(this.selfPos_Prev[0]-this.selfPos_Curr[0])/150)/10;
       this.setTransition();
 
       //This won't be needed anymore
@@ -160,175 +138,234 @@ export class NothingFoundComponent implements OnInit {
       return Math.round((iX*(aP2[1]-aP1[1]) -aP1[0]*aP2[1] +aP2[0]*aP1[1])/(aP2[0]-aP1[0]));
     }
   }
-  setTransition()
+  setNewPosition()
   {
-    this.selfRef.nativeElement.children[0].style.transition = 'all '+this.selfTransition_Color+'s linear 0s, margin '+this.selfTransition_Margin+'s linear 0s';
-    console.log(this.selfRef.nativeElement.children[0].style.transition);
+    var
+      iX2: number, iY2: number, iEdge2: number, iDistanceX: number, iDistanceY: number,
+      aMirror: number[], aNewPos: number[];
+
+    //Find the position simmetrical to selfPos_Prev in respect to selfPos_Curr
+    switch(this.selfPos_CurrEdge)
+    {
+      case 0: //top
+        aMirror = [
+          Math.round(this.selfPos_Prev[0]-2*(this.selfPos_Prev[0]-this.selfPos_Curr[0])),
+          this.selfPos_Prev[1]
+        ];
+        iX2 = this.getCoordX(aMirror, this.selfPos_Curr, this.getMaxPosY());
+        iY2 = this.getMaxPosY();
+
+        iEdge2 = 2;
+        aNewPos = [iX2, iY2];
+
+        //Check if it's actually inside the window and, if not, get the correct destination
+        if (iX2 <= 0)
+        {
+          aNewPos = [
+            0,
+            this.getCoordY([iX2, iY2], this.selfPos_Curr, 0)
+          ];
+
+          iEdge2 = 3;
+
+        } else if (iX2 >= this.getMaxPosX())
+        {
+          aNewPos = [
+            this.getMaxPosX(),
+            this.getCoordY([iX2, iY2], this.selfPos_Curr, this.getMaxPosX())
+          ];
+
+          iEdge2 = 1;
+
+        }
+        break;
+
+      case 1: //right
+        aMirror = [
+          this.selfPos_Prev[0],
+          Math.round(this.selfPos_Prev[1]-2*(this.selfPos_Prev[1]-this.selfPos_Curr[1]))
+        ];
+        iX2 = 0;
+        iY2 = this.getCoordY(aMirror, this.selfPos_Curr, 0);
+
+        iEdge2 = 3;
+        aNewPos = [iX2, iY2];
+
+        //Check if it's actually inside the window and, if not, get the correct destination
+        if (iY2 <= 0)
+        {
+          aNewPos = [
+            this.getCoordX([iX2, iY2], this.selfPos_Curr, 0),
+            0
+          ];
+
+          iEdge2 = 0;
+
+        } else if (iY2 >= this.getMaxPosY())
+        {
+          aNewPos = [
+            this.getCoordX([iX2, iY2], this.selfPos_Curr, this.getMaxPosY()),
+            this.getMaxPosY()
+          ];
+
+          iEdge2 = 2;
+
+        }
+        break;
+
+      case 2: //bottom
+        aMirror = [
+          Math.round(this.selfPos_Prev[0]-2*(this.selfPos_Prev[0]-this.selfPos_Curr[0])),
+          this.selfPos_Prev[1]
+        ];
+        iX2 = this.getCoordX(aMirror, this.selfPos_Curr, 0);
+        iY2 = 0;
+
+        iEdge2 = 0;
+        aNewPos = [iX2, iY2];
+
+        //Check if it's actually inside the window and, if not, get the correct destination
+        if (iX2 <= 0)
+        {
+          aNewPos = [
+            0,
+            this.getCoordY([iX2, iY2], this.selfPos_Curr, 0)
+          ];
+
+          iEdge2 = 3;
+
+        } else if (iX2 >= this.getMaxPosX())
+        {
+          aNewPos = [
+            this.getMaxPosX(),
+            this.getCoordY([iX2, iY2], this.selfPos_Curr, this.getMaxPosX())
+          ];
+
+          iEdge2 = 1;
+
+        }
+        break;
+
+      default: //left
+        aMirror = [
+          this.selfPos_Prev[0],
+          Math.round(this.selfPos_Prev[1]-2*(this.selfPos_Prev[1]-this.selfPos_Curr[1]))
+        ];
+        iX2 = this.getMaxPosX();
+        iY2 = this.getCoordY(aMirror, this.selfPos_Curr, this.getMaxPosX());
+
+        iEdge2 = 1;
+        aNewPos = [iX2, iY2];
+
+        //Check if it's actually inside the window and, if not, get the correct destination
+        if (iY2 <= 0)
+        {
+          aNewPos = [
+            this.getCoordX([iX2, iY2], this.selfPos_Curr, 0),
+            0
+          ];
+
+          iEdge2 = 0;
+
+        } else if (iY2 >= this.getMaxPosY())
+        {
+          aNewPos = [
+            this.getCoordX([iX2, iY2], this.selfPos_Curr, this.getMaxPosY()),
+            this.getMaxPosY()
+          ];
+
+          iEdge2 = 2;
+
+        }
+        break;
+    }
+
+    //Save the old current position
+    this.selfPos_Prev = [this.selfPos_Curr[0], this.selfPos_Curr[1]];
+
+    //Save the destination as the future "current" position
+    this.selfPos_Curr = [aNewPos[0], aNewPos[1]];
+    this.selfPos_CurrEdge = iEdge2;
+
+    //Chart the course
+    this.selfRef.nativeElement.children[0].style.left = this.selfPos_Curr[0]+'px';
+    this.selfRef.nativeElement.children[0].style.top = this.selfPos_Curr[1]+'px';
+
+    //And set the speed
+    iDistanceX = Math.abs(this.selfPos_Prev[0]-this.selfPos_Curr[0]);
+    iDistanceY = Math.abs(this.selfPos_Prev[0]-this.selfPos_Curr[0]);
+
+    if ((((iDistanceX**2)+(iDistanceY**2))**(1/2)) > 5)
+    {
+      this.selfTransition_Top = Math.round(10*iDistanceY/150)/10;
+      this.selfTransition_Left = Math.round(10*iDistanceX/150)/10;
+      this.setTransition();
+
+      //Also, set the bools
+      this.selfTransition_Top_Ended = false;
+      this.selfTransition_Left_Ended = false;
+    }else
+    {
+      //Destination too close to be worth playing the animation; skip it
+      this.setNewPosition();
+    }
   }
 
+  setNewColor()
+  {
+    var
+      iTemp: number = this.randomQty(255),
+      iID: number = this.randomQty(3),
+      iNewVal: number;
 
+    if (Math.abs(this.selfBackColor[iID]-iTemp) <= 50) //This would fail for 127.5, but this particular value shouldn't ever come up
+    {
+      if (iTemp > 127)
+      {
+        iNewVal = iTemp-100;
+      }else
+      {
+        iNewVal = iTemp+100;
+      }
+    }else
+    {
+      iNewVal = iTemp;
+    }
+
+    this.selfTransition_Color = Math.round(10*Math.abs(iNewVal-this.selfBackColor[iID])/75)/10;
+    this.selfBackColor[iID] = iNewVal;
+
+    this.selfRef.nativeElement.children[0].style.backgroundColor = 'rgba('+this.selfBackColor[0]+', '+this.selfBackColor[1]+', '+this.selfBackColor[2]+', 255)';
+    this.selfRef.nativeElement.children[0].style.color = 'rgba('+(255-this.selfBackColor[0])+', '+(255-this.selfBackColor[1])+', '+(255-this.selfBackColor[2])+', 255)';
+
+    this.setTransition();
+  }
+
+  setTransition()
+  {
+    this.selfRef.nativeElement.children[0].style.transition = 'all '+this.selfTransition_Color+'s linear 0s, top '+this.selfTransition_Top+'s linear 0s, left '+this.selfTransition_Left+'s linear 0s';
+  }
 
   onTransitionEnd(eEvent: TransitionEvent)
   {
-    if (eEvent.propertyName == 'color') //Only 1 proc per transition end!
+    //Only 1 proc per transition end!
+    if (eEvent.propertyName == 'color')
     {
       this.setNewColor();
 
-    } else if (eEvent.propertyName == 'margin-left') //Only 1 proc per transition end!
+    } else if (eEvent.propertyName == 'top')
     {
-      var
-        iX2: number, iY2: number, aMirror: number[], aNewPos: number[], iEdge2: number;
+      this.selfTransition_Top_Ended = true;
 
-      //Find the position simmetrical to selfPos_Prev in respect to selfPos_Curr
-      switch(this.selfPos_CurrEdge)
-      {
-        case 0: //top
-          aMirror = [
-            Math.round(this.selfPos_Prev[0]-2*(this.selfPos_Prev[0]-this.selfPos_Curr[0])),
-            this.selfPos_Prev[1]
-          ];
-          iX2 = this.getCoordX(aMirror, this.selfPos_Curr, this.getMaxPosY());
-          iY2 = this.getMaxPosY();
+    } else if (eEvent.propertyName == 'left')
+    {
+      this.selfTransition_Left_Ended = true;
 
-          iEdge2 = 2;
-          aNewPos = [iX2, iY2];
+    }
 
-          //Check if it's actually inside the window and, if not, get the correct destination
-          if (iX2 <= 0)
-          {
-            aNewPos = [
-              0,
-              this.getCoordY([iX2, iY2], this.selfPos_Curr, 0)
-            ];
-
-            iEdge2 = 3;
-
-          } else if (iX2 >= this.getMaxPosX())
-          {
-            aNewPos = [
-              this.getMaxPosX(),
-              this.getCoordY([iX2, iY2], this.selfPos_Curr, this.getMaxPosX())
-            ];
-
-            iEdge2 = 1;
-
-          }
-          break;
-
-        case 1: //right
-          aMirror = [
-            this.selfPos_Prev[0],
-            Math.round(this.selfPos_Prev[1]-2*(this.selfPos_Prev[1]-this.selfPos_Curr[1]))
-          ];
-          iX2 = 0;
-          iY2 = this.getCoordY(aMirror, this.selfPos_Curr, 0);
-
-          iEdge2 = 3;
-          aNewPos = [iX2, iY2];
-
-          //Check if it's actually inside the window and, if not, get the correct destination
-          if (iY2 <= 0)
-          {
-            aNewPos = [
-              this.getCoordX([iX2, iY2], this.selfPos_Curr, 0),
-              0
-            ];
-
-            iEdge2 = 0;
-
-          } else if (iY2 >= this.getMaxPosY())
-          {
-            aNewPos = [
-              this.getCoordX([iX2, iY2], this.selfPos_Curr, this.getMaxPosY()),
-              this.getMaxPosY()
-            ];
-
-            iEdge2 = 2;
-
-          }
-          break;
-
-        case 2: //bottom
-          aMirror = [
-            Math.round(this.selfPos_Prev[0]-2*(this.selfPos_Prev[0]-this.selfPos_Curr[0])),
-            this.selfPos_Prev[1]
-          ];
-          iX2 = this.getCoordX(aMirror, this.selfPos_Curr, 0);
-          iY2 = 0;
-
-          iEdge2 = 0;
-          aNewPos = [iX2, iY2];
-
-          //Check if it's actually inside the window and, if not, get the correct destination
-          if (iX2 <= 0)
-          {
-            aNewPos = [
-              0,
-              this.getCoordY([iX2, iY2], this.selfPos_Curr, 0)
-            ];
-
-            iEdge2 = 3;
-
-          } else if (iX2 >= this.getMaxPosX())
-          {
-            aNewPos = [
-              this.getMaxPosX(),
-              this.getCoordY([iX2, iY2], this.selfPos_Curr, this.getMaxPosX())
-            ];
-
-            iEdge2 = 1;
-
-          }
-          break;
-
-        default: //left
-          aMirror = [
-            this.selfPos_Prev[0],
-            Math.round(this.selfPos_Prev[1]-2*(this.selfPos_Prev[1]-this.selfPos_Curr[1]))
-          ];
-          iX2 = this.getMaxPosX();
-          iY2 = this.getCoordY(aMirror, this.selfPos_Curr, this.getMaxPosX());
-
-          iEdge2 = 1;
-          aNewPos = [iX2, iY2];
-
-          //Check if it's actually inside the window and, if not, get the correct destination
-          if (iY2 <= 0)
-          {
-            aNewPos = [
-              this.getCoordX([iX2, iY2], this.selfPos_Curr, 0),
-              0
-            ];
-
-            iEdge2 = 0;
-
-          } else if (iY2 >= this.getMaxPosY())
-          {
-            aNewPos = [
-              this.getCoordX([iX2, iY2], this.selfPos_Curr, this.getMaxPosY()),
-              this.getMaxPosY()
-            ];
-
-            iEdge2 = 2;
-
-          }
-          break;
-      }
-
-      //Save the old current position
-      this.selfPos_Prev = [this.selfPos_Curr[0], this.selfPos_Curr[1]];
-
-      //Save the destination as the future "current" position
-      this.selfPos_Curr = [aNewPos[0], aNewPos[1]];
-      this.selfPos_CurrEdge = iEdge2;
-
-      //Chart the course
-      this.selfRef.nativeElement.children[0].style.marginLeft = this.selfPos_Curr[0]+'px';
-      this.selfRef.nativeElement.children[0].style.marginTop = this.selfPos_Curr[1]+'px';
-
-      //And set the speed
-      this.selfTransition_Margin = Math.round(10*((((this.selfPos_Prev[0]-this.selfPos_Curr[0])**2)+((this.selfPos_Prev[1]-this.selfPos_Curr[1])**2))**(1/2))/150)/10;
-      this.setTransition();
+    if (this.selfTransition_Top_Ended && this.selfTransition_Left_Ended)
+    {
+      this.setNewPosition();
     }
   }
 }

@@ -61,6 +61,29 @@ export class PW1FormMainComponent implements OnInit {
     return aResult;
   }
 
+  PW1_CheckValidState(...sElements: string[]): number
+  {
+    var
+      i: number,
+      iResult: number = 1;
+
+    for (i = 0; i < sElements.length; i++)
+    {
+      if (this.PW1_form.get(sElements[i]).dirty)
+      {
+        if (this.PW1_form.get(sElements[i]).errors != null)
+        {
+          iResult = 0;
+        }
+      }else
+      {
+        return -1;
+      }
+    }
+
+    return iResult;
+  }
+
   EncodeDate(sDate: string, sTime: string): void
   {
     //Get the values as an array; [0] is if the process was successful
@@ -105,7 +128,7 @@ export class PW1FormMainComponent implements OnInit {
       {
         this.PW1_dateTimeRef[0].style.borderColor = 'rgba(0, 255, 0, 255)';
         this.PW1_dateTimeRef[1].style.borderColor = 'rgba(0, 255, 0, 255)';
-        this.PW1_dateTimeRef[1].style.borderRightWidth = '10px';
+        this.PW1_dateTimeRef[1].style.borderRightWidth = '20px';
 
         //We need to set both forms as valid! Also, no need to check for PW1_form: it wouldn't be valid otherwise
         this.PW1_form.get('date').setErrors(null);
@@ -119,11 +142,11 @@ export class PW1FormMainComponent implements OnInit {
         {
           this.PW1_dateTimeRef[0].style.borderColor = 'rgba(255, 0, 0, 255)';
           this.PW1_dateTimeRef[1].style.borderColor = 'rgba(255, 0, 0, 255)';
-          this.PW1_dateTimeRef[1].style.borderRightWidth = '10px';
+          this.PW1_dateTimeRef[1].style.borderRightWidth = '20px';
 
           if (aArr[0].length > 0)
           {
-            this.PW1_dateTimeError = 'Impossibile intervenire nel passato';
+            this.PW1_dateTimeError = 'Il passato è irreversibile';
           }else
           {
             this.PW1_dateTimeError = 'Data non valida';

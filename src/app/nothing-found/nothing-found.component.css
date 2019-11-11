@@ -1,7 +1,7 @@
 
 #container
 {
-  position: relative;
+  position: fixed;
   display: block;
   border-width: 15px;
   border-style: ridge;
@@ -9,18 +9,12 @@
   margin: 15px;
   padding: 15px;
   width: 520px;
-  transition: 2.0s;
+  top: 0px;
+  left: 0px;
+  transition: all 2.0s linear 0s;
 }
 
-#text
-{
-  font-weight: bold;
-  font-size: 20px;
-  margin-bottom: 10px;
-  text-align: center;
-}
-
-#throw
+#text, #throw
 {
   font-weight: bold;
   font-size: 20px;
