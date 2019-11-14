@@ -218,6 +218,18 @@ export class PW1FormMainComponent implements OnInit {
     this.bPrice_WasDecChar_RightCaretSide = (val.value[val.selectionStart] && (val.value[val.selectionStart] == sDecimalChar));
   }
 
+  PW1_FocusOutPrice()
+  {
+    //Yeah, how about no. It's fine while you're writing it, but not if you leave it like this.
+    var
+      sTxt = this.PW1_form.get('price').value;
+
+    if ((sTxt.length <= 0) || (sTxt == '-'))
+    {
+      this.PW1_form.get('price').markAsDirty();
+    }
+  }
+
   PW1_ValidatePrice(val: any) //Doesn't actually validate anything; it is instead passed onInput, so that we can use the element ref to fix its value on the fly
   {
     var
@@ -353,11 +365,9 @@ export class PW1FormMainComponent implements OnInit {
         this.PW1_data.price *= -1;
       }
       */
-
-      return null;
     }else
     {
-      return {'error': 'Il prezzo è necessario.' };
+      this.PW1_form.get('price').markAsPristine();
     }
   }
 
