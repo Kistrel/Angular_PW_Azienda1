@@ -20,6 +20,7 @@ export class PW1FormMainComponent implements OnInit {
   bPrice_WasThousChar_LeftCaretSide: boolean;
   bPrice_WasDecChar_LeftCaretSide: boolean;
   bPrice_WasDecChar_RightCaretSide: boolean;
+  bPrice_LastCaretPos: number;
 
   avatarImg: string;
 
@@ -222,6 +223,7 @@ export class PW1FormMainComponent implements OnInit {
 
   PW1_KeyUpPrice(val :any)
   {
+    //Record some data: we're going to need it to handle chars being deleted
     var
       sDecimalChar = (1.1).toLocaleString(),
       sThousandChar = (1000).toLocaleString();
@@ -232,9 +234,10 @@ export class PW1FormMainComponent implements OnInit {
     this.bPrice_WasThousChar_LeftCaretSide = (val.value[val.selectionStart-1] && (val.value[val.selectionStart-1] == sThousandChar));
     this.bPrice_WasDecChar_LeftCaretSide = (val.value[val.selectionStart-1] && (val.value[val.selectionStart-1] == sDecimalChar));
     this.bPrice_WasDecChar_RightCaretSide = (val.value[val.selectionStart] && (val.value[val.selectionStart] == sDecimalChar));
+    this.bPrice_LastCaretPos = val.selectionStart;
   }
 
-  PW1_FocusOutPrice()
+  PW1_FocusInOutPrice(bFocusOut: boolean)
   {
     //Yeah, how about no. It's fine while you're writing it, but not if you leave it like this.
     var
@@ -242,7 +245,13 @@ export class PW1FormMainComponent implements OnInit {
 
     if ((sTxt.length == '') || (sTxt == '-'))
     {
-      this.PW1_form.get('price').markAsDirty();
+      if (bFocusOut)
+      {
+        this.PW1_form.get('price').markAsDirty();
+      }else
+      {
+        this.PW1_form.get('price').markAsPristine();
+      }
     }
   }
 
@@ -302,6 +311,7 @@ export class PW1FormMainComponent implements OnInit {
       //Something was deleted: determine what it was and move the caret accordingly
       if (this.PW1_data.price && (this.PW1_data.price.length == (sTxt.length+1)))
       {
+        //Something was deleted on the left
         if ((val.value[val.selectionStart-1] != sDecimalChar) && (val.value[val.selectionStart-1] != sThousandChar))
         {
           if (this.bPrice_WasThousChar_LeftCaretSide)
@@ -317,6 +327,7 @@ export class PW1FormMainComponent implements OnInit {
           }
         }
 
+        //Something was deleted on the right
         if (this.bPrice_WasDecChar_RightCaretSide && (val.value[val.selectionStart] != sDecimalChar) && (val.value[val.selectionStart] != sThousandChar))
         {
           //Remove the last 2 digits from aArr[0] and add them as aArr[1]
@@ -326,7 +337,8 @@ export class PW1FormMainComponent implements OnInit {
           iCaret += 1;
         }
 
-        if(aArr[0].length <= 0)
+        //The last digit in the integer side was deleted with the backspace
+        if ((aArr[0].length <= 0) && (this.bPrice_LastCaretPos > 0))
         {
           iCaret -= 2;
         }

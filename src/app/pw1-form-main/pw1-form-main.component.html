@@ -33,7 +33,7 @@
     <label for="price">*Prezzo (€):</label>
     <input type="text" id="price" class="textinput_req" #price (input)="PW1_ValidatePrice(price)" [readonly]="PW1_WorkerData.iLastPostResponse == 0"
     autocomplete="off" formControlName="price" (keyup)="PW1_KeyUpPrice(price)" (focus)="PW1_KeyUpPrice(price)" (click)="PW1_KeyUpPrice(price)"
-    (focusout)="PW1_FocusOutPrice()">
+    (focusin)="PW1_FocusInOutPrice(false)" (focusout)="PW1_FocusInOutPrice(true)">
     <div class="divValidInvalid">
       <div class="divValid" *ngIf="PW1_CheckValidState('price') == 1">✓</div>
       <div class="divInvalid" *ngIf="PW1_CheckValidState('price') == 0">X</div>
