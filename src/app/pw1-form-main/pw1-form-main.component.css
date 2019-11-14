@@ -149,11 +149,15 @@ input:focus, textarea:focus
   left: 360px;
 
   border-radius: 30px;
+
+  transition: opacity 0.3s linear 0s;
 }
 #imgAvatar
 {
   width: 42px;
   height: 42px;
+
+  opacity: 0;
 }
 #imgAvatarDiv
 {
@@ -163,6 +167,8 @@ input:focus, textarea:focus
   border-color: black;
   border-style: solid;
   border-width: 1px;
+
+  opacity: 1;
 }
 
 #worker

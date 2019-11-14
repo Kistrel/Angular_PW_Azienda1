@@ -52,8 +52,8 @@
         <div class="divInvalid" *ngIf="PW1_CheckValidState('worker') == 0">X</div>
         <div class="divValid" style="opacity: 0;">✓</div>
       </div>
-      <img *ngIf="avatarImg.length > 0" id="imgAvatar" src="{{avatarImg}}" alt="avatar">
-      <div *ngIf="avatarImg.length <= 0" id="imgAvatarDiv"></div>
+      <img [style.opacity]="avatarOpacity" id="imgAvatar" src="{{avatarImg}}" alt="avatar">
+      <div [style.opacity]="1-avatarOpacity" id="imgAvatarDiv"></div>
     </div>
 
     <div id="buttonGroup">

@@ -14,8 +14,8 @@ export class PW1FormMainComponent implements OnInit {
   iDetail_MaxLength: number = 25;
 
   PW1_data: PW1FormData = new PW1FormData();
-  PW1_dateTimeRef: any;
 
+  PW1_dateTimeRef: any;
   PW1_dateTimeError: string = '';
   bPrice_WasThousChar_LeftCaretSide: boolean;
   bPrice_WasDecChar_LeftCaretSide: boolean;
@@ -23,7 +23,8 @@ export class PW1FormMainComponent implements OnInit {
   iPrice_LastThousandCount: number;
   iPrice_LastCaretPos: number;
 
-  avatarImg: string;
+  avatarOpacity: number = 0;
+  avatarImg: string = '';
 
   PW1_form: FormGroup;
 
@@ -451,11 +452,13 @@ export class PW1FormMainComponent implements OnInit {
       {
         this.PW1_data.worker_id = this.PW1_WorkerData.getList()[i][1];
         this.avatarImg = this.PW1_WorkerData.getList()[i][2];
+        this.avatarOpacity = 1;
         return null;
       }
     }
 
-    this.avatarImg = '';
+    //this.avatarImg = '';
+    this.avatarOpacity = 0;
     return {'error': 'Il manutentore è necessario.' };
   }
 }
