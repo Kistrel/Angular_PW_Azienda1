@@ -1,7 +1,7 @@
 
 import { Component, OnInit } from '@angular/core';
 import { PW1FormData } from '../pw1-form-data';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { WorkerDataService } from '../worker-data.service';
 
 @Component({
@@ -21,22 +21,49 @@ export class PW1FormMainComponent implements OnInit {
   bPrice_WasDecChar_LeftCaretSide: boolean;
   bPrice_WasDecChar_RightCaretSide: boolean;
 
-  PW1_form = this.builder.group({
-    description: ['', [(val: any) => { return (((val.value || '').length > 0)? null : {'error': 'La descrizione è necessaria.'}) }]],
-    detail: [''],
-    date: ['', [(val: any) => {return this.validateDate()}]],
-    time: ['', [(val: any) => {return this.validateDate()}]],
-    price: ['', [(val: any) => {return ((((val.value || '').length > 0) && (val.value != '-'))? null : {'error': 'Il prezzo è necessario.'})}]],
-    worker: ['', [(val: any) => {return this.validateWorker(val.value)}]]
-  });
+  PW1_form: FormGroup;
 
   constructor(private builder: FormBuilder, public PW1_WorkerData: WorkerDataService) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.PW1_form = this.builder.group({
+      description: ['', (val: any) => { return (((val.value || '').length > 0)? null : {'error': 'La descrizione è necessaria.'}) }],
+      detail: [''],
+      date: ['', (val: any) => {return this.PW1_validateDate()}],
+      time: ['', (val: any) => {return this.PW1_validateDate()}],
+      price: ['', (val: any) => {return ((((val.value || '').length > 0) && (val.value != '-'))? null : {'error': 'Il prezzo è necessario.'})}],
+      worker: ['', (val: any) => {return this.PW1_validateWorker(val.value)}]
+    });
+
+    //Trigger the resize event, so that it will auto-center on init
+    window.dispatchEvent(new Event('resize'));
+  }
 
   onSubmit()
   {
     this.PW1_WorkerData.sendData(this.PW1_data);
+  }
+
+  onResize(divRef: any)
+  {
+    var
+      iWidth: number = (window.innerWidth-divRef.getBoundingClientRect().width)/2,
+      iHeight: number = (window.innerHeight-divRef.getBoundingClientRect().height)/2;
+
+    if (iWidth < 0)
+    {
+      divRef.style.marginLeft = '0px';
+    }else
+    {
+      divRef.style.marginLeft = iWidth+'px';
+    }
+    if (iHeight < 0)
+    {
+      divRef.style.marginTop = '0px';
+    }else
+    {
+      divRef.style.marginTop = iHeight+'px';
+    }
   }
 
   private ParseString(sStr: string, iQty: number): string[]
@@ -84,7 +111,7 @@ export class PW1FormMainComponent implements OnInit {
     return iResult;
   }
 
-  EncodeDate(sDate: string, sTime: string): void
+  private EncodeDate(sDate: string, sTime: string): void
   {
     //Get the values as an array; [0] is if the process was successful
     var
@@ -100,7 +127,7 @@ export class PW1FormMainComponent implements OnInit {
     }
   }
 
-  validateDate(): any
+  PW1_validateDate(): any
   {
     var
       oDate: any,
@@ -325,14 +352,14 @@ export class PW1FormMainComponent implements OnInit {
       }
       */
 
-      //return null;
+      return null;
     }else
     {
-      //return {'error': 'Il prezzo è necessario.' };
+      return {'error': 'Il prezzo è necessario.' };
     }
   }
 
-  validateWorker(sName: string)
+  PW1_validateWorker(sName: string)
   {
     var
       i: number;

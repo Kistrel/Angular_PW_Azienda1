@@ -1,5 +1,5 @@
 
-<div id="PW1_container">
+<div id="PW1_container" #container (window:resize)="onResize(container)">
   <form [formGroup]="PW1_form" (ngSubmit)="onSubmit()">
     <label for="description">*Descrizione: <div class="detail_chars">(massimo {{iDetail_MaxLength}} caratteri)</div></label>
     <input type="text" id="description" class="textinput_req" autocomplete="off" maxlength="{{iDetail_MaxLength}}" [readonly]="PW1_WorkerData.iLastPostResponse == 0"
@@ -10,7 +10,7 @@
       <div class="divValid" style="opacity: 0;">✓</div>
     </div>
 
-    <label for="detail">Dettagli: <div class="detail_chars">(disponibili {{iDescription_MaxLength-(PW1_data.dettaglio || '').length}} caratteri di {{iDescription_MaxLength}} massimo)</div></label>
+    <label for="detail">Dettagli: <div #detailCount class="detail_chars">(disponibili {{iDescription_MaxLength-(PW1_form.get('detail').value || '').length}} caratteri di {{iDescription_MaxLength}} massimo)</div></label>
     <textarea rows='4' cols='50' id="detail" class="textinput" autocomplete="off" maxlength="{{iDescription_MaxLength}}" [readonly]="PW1_WorkerData.iLastPostResponse == 0"
     formControlName="detail" (input)="PW1_data.dettaglio = PW1_form.get('detail').value"></textarea>
 

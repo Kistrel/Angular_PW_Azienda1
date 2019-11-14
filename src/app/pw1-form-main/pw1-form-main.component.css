@@ -6,11 +6,8 @@ label
   margin-bottom: 0px;
 }
 
-input:hover, textarea:hover, .buttons:hover:enabled
+input:hover, textarea:hover, .buttons:hover:enabled, input:focus:hover, textarea:focus:hover
 {
-  /*outline-width: 1px;
-  outline-style: dotted;
-  outline-color: rgba(0, 0, 255, 255);*/
   box-shadow: 0 0 0 1px rgba(100, 100, 255, 255);
 }
 input:focus, textarea:focus
@@ -25,6 +22,11 @@ input:focus, textarea:focus
   border-width: 1px;
   border-style: solid;
   border-color: rgba(0, 0, 0, 255);
+}
+.textinput
+{
+  min-width: 400px;
+  max-width: 400px;
 }
 .textinput_req
 {
