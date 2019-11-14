@@ -10,7 +10,7 @@
       <div class="divValid" style="opacity: 0;">✓</div>
     </div>
 
-    <label for="detail">Dettagli: <div #detailCount class="detail_chars">(disponibili {{iDescription_MaxLength-(PW1_form.get('detail').value || '').length}} caratteri di {{iDescription_MaxLength}} massimo)</div></label>
+    <label for="detail">Dettagli: <div #detailCount class="detail_chars">(disponibili {{iDescription_MaxLength-(PW1_data.dettaglio || '').length}} caratteri di {{iDescription_MaxLength}} massimo)</div></label>
     <textarea rows='4' cols='50' id="detail" class="textinput" autocomplete="off" maxlength="{{iDescription_MaxLength}}" [readonly]="PW1_WorkerData.iLastPostResponse == 0"
     formControlName="detail" (input)="PW1_data.dettaglio = PW1_form.get('detail').value"></textarea>
 
@@ -53,7 +53,7 @@
 
     <div id="buttonGroup">
       <button type="submit" id="buttonSubmit" class="buttons" [disabled]="(!PW1_form.valid) || (PW1_WorkerData.iLastPostResponse == 0)">Invia</button>
-      <button type="reset" id="buttonReset" class="buttons" [disabled]="PW1_WorkerData.iLastPostResponse == 0" (click)="PW1_WorkerData.iLastPostResponse = -1">Cancella</button>
+      <button type="reset" id="buttonReset" class="buttons" [disabled]="PW1_WorkerData.iLastPostResponse == 0" (click)="PW1_data.dettaglio = ''; PW1_WorkerData.iLastPostResponse = -1">Cancella</button>
     </div>
     <div class="detail_chars" *ngIf="PW1_WorkerData.iLastPostResponse == -1">I campi contrassegnati con * sono obbligatori</div>
     <div class="detail_chars" *ngIf="PW1_WorkerData.iLastPostResponse == 0">Invio in corso...</div>
