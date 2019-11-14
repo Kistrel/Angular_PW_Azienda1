@@ -135,6 +135,45 @@ input:focus, textarea:focus
   border-right-width: 0px;
 }
 
+#workerDiv
+{
+  display: inline-block;
+  position: relative;
+}
+
+#imgAvatarDiv, #imgAvatar
+{
+  display: inline-block;
+  position: absolute;
+  top: 20px;
+  left: 360px;
+
+  border-radius: 30px;
+}
+#imgAvatar
+{
+  width: 42px;
+  height: 42px;
+}
+#imgAvatarDiv
+{
+  width: 40px;
+  height: 40px;
+
+  border-color: black;
+  border-style: solid;
+  border-width: 1px;
+}
+
+#worker
+{
+  width: 353px;
+}
+#worker.ng-dirty.ng-valid, #worker.ng-dirty.ng-invalid
+{
+  width: 330px;
+}
+
 #buttonGroup
 {
   margin-top: 25px;

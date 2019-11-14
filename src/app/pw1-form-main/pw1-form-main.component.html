@@ -39,16 +39,20 @@
       <div class="divValid" style="opacity: 0;">✓</div>
     </div>
 
-    <label for="worker">*Manutentore/trice da assegnare: <div *ngIf="PW1_WorkerData.list.length == 0" class="detail_chars">(sto caricando i nomi dal server)</div></label>
-    <input type="select" id="worker" class="textinput_req" formControlName="worker" list='worker_list' placeholder='Click per selezionare'
-    [readonly]="PW1_WorkerData.iLastPostResponse == 0" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off">
-    <datalist id="worker_list">
-      <option *ngFor="let item of PW1_WorkerData.getList()">{{item[0]}}</option>
-    </datalist>
-    <div class="divValidInvalid">
-      <div class="divValid" *ngIf="PW1_CheckValidState('worker') == 1">✓</div>
-      <div class="divInvalid" *ngIf="PW1_CheckValidState('worker') == 0">X</div>
-      <div class="divValid" style="opacity: 0;">✓</div>
+    <div id="workerDiv">
+      <label for="worker">*Manutentore/trice da assegnare: <div *ngIf="PW1_WorkerData.list.length == 0" class="detail_chars">(in attesa del server)</div></label>
+      <input type="select" id="worker" class="textinput_req" formControlName="worker" list='worker_list' placeholder='Click per selezionare'
+      [readonly]="PW1_WorkerData.iLastPostResponse == 0" spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="off">
+      <datalist id="worker_list">
+        <option *ngFor="let item of PW1_WorkerData.getList()">{{item[0]}}</option>
+      </datalist>
+      <div class="divValidInvalid">
+        <div class="divValid" *ngIf="PW1_CheckValidState('worker') == 1">✓</div>
+        <div class="divInvalid" *ngIf="PW1_CheckValidState('worker') == 0">X</div>
+        <div class="divValid" style="opacity: 0;">✓</div>
+      </div>
+      <img *ngIf="avatarImg.length > 0" id="imgAvatar" src="{{avatarImg}}" alt="avatar">
+      <div *ngIf="avatarImg.length <= 0" id="imgAvatarDiv"></div>
     </div>
 
     <div id="buttonGroup">

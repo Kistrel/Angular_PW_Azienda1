@@ -54,7 +54,7 @@ export class WorkerDataService {
           //Append the values we got from the server
           for (i = 0; i < aResponse.data.length; i++)
           {
-            this.list.push([aResponse.data[i].last_name+', '+aResponse.data[i].first_name, aResponse.data[i].id]);
+            this.list.push([aResponse.data[i].last_name+', '+aResponse.data[i].first_name, aResponse.data[i].id, aResponse.data[i].avatar]);
           }
 
           //Log the response, so that it can be checked against the worker_id in the data sent

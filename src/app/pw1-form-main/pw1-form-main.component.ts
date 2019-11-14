@@ -21,6 +21,8 @@ export class PW1FormMainComponent implements OnInit {
   bPrice_WasDecChar_LeftCaretSide: boolean;
   bPrice_WasDecChar_RightCaretSide: boolean;
 
+  avatarImg: string;
+
   PW1_form: FormGroup;
 
   constructor(private builder: FormBuilder, public PW1_WorkerData: WorkerDataService) { }
@@ -369,10 +371,12 @@ export class PW1FormMainComponent implements OnInit {
       if (this.PW1_WorkerData.getList()[i][0] == sName)
       {
         this.PW1_data.worker_id = this.PW1_WorkerData.getList()[i][1];
+        this.avatarImg = this.PW1_WorkerData.getList()[i][2];
         return null;
       }
     }
 
+    this.avatarImg = '';
     return {'error': 'Il manutentore è necessario.' };
   }
 }
