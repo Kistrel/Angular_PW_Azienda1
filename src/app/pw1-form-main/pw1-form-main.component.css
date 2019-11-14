@@ -25,6 +25,9 @@ input:focus, textarea:focus
   border-width: 1px;
   border-style: solid;
   border-color: rgba(0, 0, 0, 255);
+}
+.textinput_req
+{
   transition: all 0.3s ease 0s;
 }
 .textinput_req.ng-dirty.ng-valid
