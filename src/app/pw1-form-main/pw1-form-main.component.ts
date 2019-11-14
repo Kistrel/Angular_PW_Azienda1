@@ -20,7 +20,8 @@ export class PW1FormMainComponent implements OnInit {
   bPrice_WasThousChar_LeftCaretSide: boolean;
   bPrice_WasDecChar_LeftCaretSide: boolean;
   bPrice_WasDecChar_RightCaretSide: boolean;
-  bPrice_LastCaretPos: number;
+  iPrice_LastThousandCount: number;
+  iPrice_LastCaretPos: number;
 
   avatarImg: string;
 
@@ -234,7 +235,15 @@ export class PW1FormMainComponent implements OnInit {
     this.bPrice_WasThousChar_LeftCaretSide = (val.value[val.selectionStart-1] && (val.value[val.selectionStart-1] == sThousandChar));
     this.bPrice_WasDecChar_LeftCaretSide = (val.value[val.selectionStart-1] && (val.value[val.selectionStart-1] == sDecimalChar));
     this.bPrice_WasDecChar_RightCaretSide = (val.value[val.selectionStart] && (val.value[val.selectionStart] == sDecimalChar));
-    this.bPrice_LastCaretPos = val.selectionStart;
+
+    //Ignore the negative sign
+    if ((val.value.length > 0) && (val.value[0] == '-'))
+    {
+      this.iPrice_LastCaretPos = val.selectionStart-1;
+    }else
+    {
+      this.iPrice_LastCaretPos = val.selectionStart;
+    }
   }
 
   PW1_FocusInOutPrice(bFocusOut: boolean)
@@ -337,14 +346,36 @@ export class PW1FormMainComponent implements OnInit {
           iCaret += 1;
         }
 
-        //The last digit in the integer side was deleted with the backspace
-        if ((aArr[0].length <= 0) && (this.bPrice_LastCaretPos > 0))
+        //The last digit in the integer side was deleted with the backspace (ignores the negative sign)
+        if ((aArr[0].length <= 0) && (this.iPrice_LastCaretPos > 0))
         {
           iCaret -= 2;
+        }
+
+        //Some sThousandChar was removed but not deleted...
+        if ((aArr[0].length > 0) && (this.iPrice_LastThousandCount > Math.floor((aArr[0].length-1)/3)))
+        {
+          if (this.iPrice_LastCaretPos > val.selectionStart)
+          {
+            //... by using the backspace
+            //do nothing
+          }else
+          {
+            //... by using canc
+            iCaret += 1;
+          }
+        }
+      }else
+      {
+        //Some sThousandChar was removed by using sDecimalChar
+        if ((aArr[0].length > 0) && (this.iPrice_LastThousandCount > Math.floor((aArr[0].length-1)/3)))
+        {
+          iCaret += (this.iPrice_LastThousandCount-Math.floor((aArr[0].length-1)/3));
         }
       }
 
       //Concatenate the integers (if they exist)
+      this.iPrice_LastThousandCount = 0;
       sTemp = '';
       if (aArr[0].length > 0)
       {
@@ -355,6 +386,7 @@ export class PW1FormMainComponent implements OnInit {
           {
             sTemp = sThousandChar+sTemp;
             iCaret += 1;
+            this.iPrice_LastThousandCount += 1;
           }
           sTemp = aArr[0][i]+sTemp;
         }
