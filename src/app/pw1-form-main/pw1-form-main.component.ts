@@ -224,7 +224,7 @@ export class PW1FormMainComponent implements OnInit {
     var
       sTxt = this.PW1_form.get('price').value;
 
-    if ((sTxt.length <= 0) || (sTxt == '-'))
+    if ((sTxt.length == '') || (sTxt == '-'))
     {
       this.PW1_form.get('price').markAsDirty();
     }
@@ -309,6 +309,11 @@ export class PW1FormMainComponent implements OnInit {
 
           iCaret += 1;
         }
+
+        if(aArr[0].length <= 0)
+        {
+          iCaret -= 2;
+        }
       }
 
       //Concatenate the integers (if they exist)
@@ -328,7 +333,7 @@ export class PW1FormMainComponent implements OnInit {
       }else
       {
         sTemp += '0';
-        iCaret += 1;
+        iCaret += 2;
       }
       sResult += sTemp;
 
