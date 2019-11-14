@@ -7,8 +7,6 @@ import { Observable, timer } from 'rxjs';
   styleUrls: ['./nothing-found.component.css']
 })
 export class NothingFoundComponent implements OnInit {
-  iScrollBarWidth: number = 20;
-
   selfRef: any;
   selfPos_Prev: number[] = [0, 0];
   selfPos_Curr: number[] = [0, 0];
@@ -38,12 +36,12 @@ export class NothingFoundComponent implements OnInit {
 
   getMaxPosX(): any
   {
-    return window.innerWidth-this.selfRef.nativeElement.children[0].getBoundingClientRect().width-this.iScrollBarWidth;
+    return window.innerWidth-this.selfRef.nativeElement.children[0].getBoundingClientRect().width;
   }
 
   getMaxPosY(): any
   {
-    return window.innerHeight-this.selfRef.nativeElement.children[0].getBoundingClientRect().height-this.iScrollBarWidth;
+    return window.innerHeight-this.selfRef.nativeElement.children[0].getBoundingClientRect().height;
   }
 
   ngOnInit() {
