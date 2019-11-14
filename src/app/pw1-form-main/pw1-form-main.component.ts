@@ -252,7 +252,7 @@ export class PW1FormMainComponent implements OnInit {
     var
       sTxt = this.PW1_form.get('price').value;
 
-    if ((sTxt.length == '') || (sTxt == '-'))
+    if ((sTxt == '') || (sTxt == '-'))
     {
       if (bFocusOut)
       {
