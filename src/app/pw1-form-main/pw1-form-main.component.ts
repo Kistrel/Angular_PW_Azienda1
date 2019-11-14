@@ -129,6 +129,33 @@ export class PW1FormMainComponent implements OnInit {
     }
   }
 
+  private setDatetimeBorder(bsetValid: number)
+  {
+    if (bsetValid < 0)
+    {
+      this.PW1_dateTimeRef[0].style.borderColor = 'rgba(0, 0, 0, 255)';
+      this.PW1_dateTimeRef[1].style.borderColor = 'rgba(0, 0, 0, 255)';
+      this.PW1_dateTimeRef[1].style.borderRightWidth = '1px';
+      this.PW1_dateTimeRef[1].style.borderTopRightRadius = '0px';
+      this.PW1_dateTimeRef[1].style.borderBottomRightRadius = '0px';
+    }else
+    {
+      if (bsetValid > 0)
+      {
+        this.PW1_dateTimeRef[0].style.borderColor = 'rgba(0, 255, 0, 255)';
+        this.PW1_dateTimeRef[1].style.borderColor = 'rgba(0, 255, 0, 255)';
+      }else
+      {
+        this.PW1_dateTimeRef[0].style.borderColor = 'rgba(255, 0, 0, 255)';
+        this.PW1_dateTimeRef[1].style.borderColor = 'rgba(255, 0, 0, 255)';
+      }
+
+      this.PW1_dateTimeRef[1].style.borderRightWidth = '20px';
+      this.PW1_dateTimeRef[1].style.borderTopRightRadius = '9px';
+      this.PW1_dateTimeRef[1].style.borderBottomRightRadius = '9px';
+    }
+  }
+
   PW1_validateDate(): any
   {
     var
@@ -155,11 +182,7 @@ export class PW1FormMainComponent implements OnInit {
     {
       if (bIsValid) //Is true only if all of the requirements are met
       {
-        this.PW1_dateTimeRef[0].style.borderColor = 'rgba(0, 255, 0, 255)';
-        this.PW1_dateTimeRef[1].style.borderColor = 'rgba(0, 255, 0, 255)';
-        this.PW1_dateTimeRef[1].style.borderRightWidth = '20px';
-        this.PW1_dateTimeRef[1].style.borderTopRightRadius = '9px';
-        this.PW1_dateTimeRef[1].style.borderBottomRightRadius = '9px';
+        this.setDatetimeBorder(1);
 
         //We need to set both forms as valid! Also, no need to check for PW1_form: it wouldn't be valid otherwise
         this.PW1_form.get('date').setErrors(null);
@@ -171,11 +194,7 @@ export class PW1FormMainComponent implements OnInit {
       {
         if (this.PW1_form && this.PW1_form.get('date').dirty && this.PW1_form.get('time').dirty)
         {
-          this.PW1_dateTimeRef[0].style.borderColor = 'rgba(255, 0, 0, 255)';
-          this.PW1_dateTimeRef[1].style.borderColor = 'rgba(255, 0, 0, 255)';
-          this.PW1_dateTimeRef[1].style.borderRightWidth = '20px';
-          this.PW1_dateTimeRef[1].style.borderTopRightRadius = '9px';
-          this.PW1_dateTimeRef[1].style.borderBottomRightRadius = '9px';
+          this.setDatetimeBorder(0);
 
           if (aArr[0].length > 0)
           {
@@ -187,11 +206,8 @@ export class PW1FormMainComponent implements OnInit {
         }else
         {
           //Nothing to see here...
-          this.PW1_dateTimeRef[0].style.borderColor = 'rgba(0, 0, 0, 255)';
-          this.PW1_dateTimeRef[1].style.borderColor = 'rgba(0, 0, 0, 255)';
-          this.PW1_dateTimeRef[1].style.borderRightWidth = '1px';
-          this.PW1_dateTimeRef[1].style.borderTopRightRadius = '0px';
-          this.PW1_dateTimeRef[1].style.borderBottomRightRadius = '0px';
+          this.setDatetimeBorder(-1);
+
           this.PW1_dateTimeError = '';
         }
 
