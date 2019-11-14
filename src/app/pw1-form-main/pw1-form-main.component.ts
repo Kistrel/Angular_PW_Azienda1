@@ -15,8 +15,8 @@ export class PW1FormMainComponent implements OnInit {
 
   PW1_data: PW1FormData = new PW1FormData();
   PW1_dateTimeRef: any;
-  PW1_dateTimeError: string = '';
 
+  PW1_dateTimeError: string = '';
   bPrice_WasThousChar_LeftCaretSide: boolean;
   bPrice_WasDecChar_LeftCaretSide: boolean;
   bPrice_WasDecChar_RightCaretSide: boolean;
@@ -26,7 +26,7 @@ export class PW1FormMainComponent implements OnInit {
     detail: [''],
     date: ['', [(val: any) => {return this.validateDate()}]],
     time: ['', [(val: any) => {return this.validateDate()}]],
-    price: ['', [(val: any) => {return (((val.value || '').length > 0)? null : {'error': 'Il prezzo è necessario.'})}]],
+    price: ['', [(val: any) => {return ((((val.value || '').length > 0) && (val.value != '-'))? null : {'error': 'Il prezzo è necessario.'})}]],
     worker: ['', [(val: any) => {return this.validateWorker(val.value)}]]
   });
 
@@ -129,6 +129,8 @@ export class PW1FormMainComponent implements OnInit {
         this.PW1_dateTimeRef[0].style.borderColor = 'rgba(0, 255, 0, 255)';
         this.PW1_dateTimeRef[1].style.borderColor = 'rgba(0, 255, 0, 255)';
         this.PW1_dateTimeRef[1].style.borderRightWidth = '20px';
+        this.PW1_dateTimeRef[1].style.borderTopRightRadius = '9px';
+        this.PW1_dateTimeRef[1].style.borderBottomRightRadius = '9px';
 
         //We need to set both forms as valid! Also, no need to check for PW1_form: it wouldn't be valid otherwise
         this.PW1_form.get('date').setErrors(null);
@@ -143,6 +145,8 @@ export class PW1FormMainComponent implements OnInit {
           this.PW1_dateTimeRef[0].style.borderColor = 'rgba(255, 0, 0, 255)';
           this.PW1_dateTimeRef[1].style.borderColor = 'rgba(255, 0, 0, 255)';
           this.PW1_dateTimeRef[1].style.borderRightWidth = '20px';
+          this.PW1_dateTimeRef[1].style.borderTopRightRadius = '9px';
+          this.PW1_dateTimeRef[1].style.borderBottomRightRadius = '9px';
 
           if (aArr[0].length > 0)
           {
@@ -157,6 +161,8 @@ export class PW1FormMainComponent implements OnInit {
           this.PW1_dateTimeRef[0].style.borderColor = 'rgba(0, 0, 0, 255)';
           this.PW1_dateTimeRef[1].style.borderColor = 'rgba(0, 0, 0, 255)';
           this.PW1_dateTimeRef[1].style.borderRightWidth = '1px';
+          this.PW1_dateTimeRef[1].style.borderTopRightRadius = '0px';
+          this.PW1_dateTimeRef[1].style.borderBottomRightRadius = '0px';
           this.PW1_dateTimeError = '';
         }
 
@@ -183,7 +189,7 @@ export class PW1FormMainComponent implements OnInit {
     this.bPrice_WasDecChar_RightCaretSide = (val.value[val.selectionStart] && (val.value[val.selectionStart] == sDecimalChar));
   }
 
-  PW1_ValidatePrice(val: any)
+  PW1_ValidatePrice(val: any) //Doesn't actually validate anything; it is instead passed onInput, so that we can use the element ref to fix its value on the fly
   {
     var
       i: number, iCaret: number,
@@ -193,7 +199,7 @@ export class PW1FormMainComponent implements OnInit {
       sDecimalChar = (1.1).toLocaleString(),
       sThousandChar = (1000).toLocaleString();
 
-    if (sTxt.length > 0)
+    if ((sTxt.length > 0) && (sTxt != '-'))
     {
       sDecimalChar = sDecimalChar.substring(1, sDecimalChar.length-1);
       sThousandChar = sThousandChar.substring(1, sThousandChar.length-3);
@@ -281,6 +287,7 @@ export class PW1FormMainComponent implements OnInit {
       }else
       {
         sTemp += '0';
+        iCaret += 1;
       }
       sResult += sTemp;
 
@@ -318,10 +325,10 @@ export class PW1FormMainComponent implements OnInit {
       }
       */
 
-      return null;
+      //return null;
     }else
     {
-      return {'error': 'Il prezzo è necessario.' };
+      //return {'error': 'Il prezzo è necessario.' };
     }
   }
 

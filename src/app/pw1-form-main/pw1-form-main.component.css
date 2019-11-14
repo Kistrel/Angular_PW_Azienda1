@@ -8,9 +8,15 @@ label
 
 input:hover, textarea:hover, .buttons:hover:enabled
 {
-  outline-width: 1px;
+  /*outline-width: 1px;
   outline-style: dotted;
-  outline-color: rgba(0, 0, 255, 255);
+  outline-color: rgba(0, 0, 255, 255);*/
+  box-shadow: 0 0 0 1px rgba(100, 100, 255, 255);
+}
+input:focus, textarea:focus
+{
+  outline-width: 0px;
+  box-shadow: 0 0 0 2px rgba(200, 200, 255, 255);
 }
 
 .textinput, .textinput_req
@@ -19,18 +25,23 @@ input:hover, textarea:hover, .buttons:hover:enabled
   border-width: 1px;
   border-style: solid;
   border-color: rgba(0, 0, 0, 255);
+  transition: all 0.3s ease 0s;
 }
 .textinput_req.ng-dirty.ng-valid
 {
   border-right-width: 20px;
   width: 381px;
   border-color: rgba(0, 255, 0, 255);
+  border-top-right-radius: 9px;
+  border-bottom-right-radius: 9px;
 }
 .textinput_req.ng-dirty.ng-invalid
 {
   border-right-width: 20px;
   width: 381px;
   border-color: rgba(255, 0, 0, 255);
+  border-top-right-radius: 9px;
+  border-bottom-right-radius: 9px;
 }
 
 .buttons
@@ -71,12 +82,12 @@ input:hover, textarea:hover, .buttons:hover:enabled
 }
 .divValid
 {
-  left: -16px;
+  left: -17px;
   top: 2px;
 }
 .divInvalid
 {
-  left: -15px;
+  left: -16px;
   top: 2px;
 }
 
@@ -111,6 +122,8 @@ input:hover, textarea:hover, .buttons:hover:enabled
 {
   border-width: 1px;
   border-style: solid;
+  transition: all 0.3s ease 0s;
+  border-radius: 0px;
 }
 #date
 {
