@@ -291,6 +291,7 @@ export class PW1FormMainComponent implements OnInit {
         {
           if (sTxt[i] == sDecimalChar)
           {
+            //Was a decimal char
             if (aArr.length < 2)
             {
               aArr.push('');
@@ -302,13 +303,16 @@ export class PW1FormMainComponent implements OnInit {
               }
             }else
             {
+              //Ignore it
               iCaret -= 1;
             }
           }else if ((i == 0) && (sTxt[i] == '-'))
           {
+            //Was the sign
             sResult = '-';
           }else
           {
+            //Was something else; ignore it
             iCaret -= 1;
           }
         }else
@@ -370,7 +374,7 @@ export class PW1FormMainComponent implements OnInit {
         //Some sThousandChar was removed by using sDecimalChar
         if ((aArr[0].length > 0) && (this.iPrice_LastThousandCount > Math.floor((aArr[0].length-1)/3)))
         {
-          iCaret += (this.iPrice_LastThousandCount-Math.floor((aArr[0].length-1)/3));
+          iCaret += (this.iPrice_LastThousandCount-Math.floor((aArr[0].length-1)/3))-1;
         }
       }
 
