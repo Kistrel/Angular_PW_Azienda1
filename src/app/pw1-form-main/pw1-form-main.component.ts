@@ -20,7 +20,6 @@ export class PW1FormMainComponent implements OnInit {
   bPrice_WasThousChar_LeftCaretSide: boolean;
   bPrice_WasDecChar_LeftCaretSide: boolean;
   bPrice_WasDecChar_RightCaretSide: boolean;
-  iPrice_LastThousandCount: number;
   iPrice_LastCaretPos: number;
 
   avatarOpacity: number = 0;
@@ -282,7 +281,7 @@ export class PW1FormMainComponent implements OnInit {
 
       sResult = '';
 
-      //Save the caret's position for later
+      //New caret pos - will refine it along the way
       iCaret = val.selectionStart;
 
       //Parse the input's value
@@ -296,16 +295,13 @@ export class PW1FormMainComponent implements OnInit {
             if (aArr.length < 2)
             {
               aArr.push('');
-
-              //This is the first decimal char found; if it has been written just now, then move the caret right
-              if ((i == (val.selectionStart-1)) && this.PW1_data.price && (this.PW1_data.price.length < sTxt.length)) //this.PW1_data.price.length is a string
-              {
-                iCaret += 1;
-              }
             }else
             {
-              //Ignore it
-              iCaret -= 1;
+              //Wasn't the first one; ignore it and adjust the caret
+              if (i < val.selectionStart)
+              {
+                iCaret -= 1;
+              }
             }
           }else if ((i == 0) && (sTxt[i] == '-'))
           {
@@ -313,8 +309,11 @@ export class PW1FormMainComponent implements OnInit {
             sResult = '-';
           }else
           {
-            //Was something else; ignore it
-            iCaret -= 1;
+            //Was something else; ignore it and adjust the caret
+            if (i < val.selectionStart)
+            {
+              iCaret -= 1;
+            }
           }
         }else
         {
@@ -322,65 +321,30 @@ export class PW1FormMainComponent implements OnInit {
         }
       }
 
-      //Something was deleted: determine what it was and move the caret accordingly
+      //Something was deleted: determine what it was and act accordingly
       if (this.PW1_data.price && (this.PW1_data.price.length == (sTxt.length+1)))
       {
-        //Something was deleted on the left
-        if ((val.value[val.selectionStart-1] != sDecimalChar) && (val.value[val.selectionStart-1] != sThousandChar))
+        //sDecimalChar was deleted on the left
+        if (this.bPrice_WasDecChar_LeftCaretSide && (val.value[val.selectionStart-1] != sDecimalChar) && (val.value[val.selectionStart-1] != sThousandChar))
         {
-          if (this.bPrice_WasThousChar_LeftCaretSide)
-          {
-            iCaret -= 1;
-          }
-
-          if (this.bPrice_WasDecChar_LeftCaretSide)
-          {
-            //Remove the last 2 digits from aArr[0] and add them as aArr[1]
-            aArr.push(aArr[0][aArr[0].length-2]+''+aArr[0][aArr[0].length-1]);
-            aArr[0] = aArr[0].substring(0, aArr[0].length-2);
-          }
+          //Remove the last 2 digits from aArr[0] and add them as aArr[1]
+          aArr.push(aArr[0][aArr[0].length-2]+''+aArr[0][aArr[0].length-1]);
+          aArr[0] = aArr[0].substring(0, aArr[0].length-2);
         }
 
-        //Something was deleted on the right
+        //sDecimalChar was deleted on the right
         if (this.bPrice_WasDecChar_RightCaretSide && (val.value[val.selectionStart] != sDecimalChar) && (val.value[val.selectionStart] != sThousandChar))
         {
           //Remove the last 2 digits from aArr[0] and add them as aArr[1]
           aArr.push(aArr[0][aArr[0].length-2]+''+aArr[0][aArr[0].length-1]);
           aArr[0] = aArr[0].substring(0, aArr[0].length-2);
 
-          iCaret += 1;
-        }
-
-        //The last digit in the integer side was deleted with the backspace (ignores the negative sign)
-        if ((aArr[0].length <= 0) && (this.iPrice_LastCaretPos > 0))
-        {
-          iCaret -= 2;
-        }
-
-        //Some sThousandChar was removed but not deleted...
-        if ((aArr[0].length > 0) && (this.iPrice_LastThousandCount > Math.floor((aArr[0].length-1)/3)))
-        {
-          if (this.iPrice_LastCaretPos > val.selectionStart)
-          {
-            //... by using the backspace
-            //do nothing
-          }else
-          {
-            //... by using canc
-            iCaret += 1;
-          }
-        }
-      }else
-      {
-        //Some sThousandChar was removed by using sDecimalChar
-        if ((aArr[0].length > 0) && (this.iPrice_LastThousandCount > Math.floor((aArr[0].length-1)/3)))
-        {
-          iCaret += (this.iPrice_LastThousandCount-Math.floor((aArr[0].length-1)/3))-1;
+          //Adjust the caret
+          iCaret +=1;
         }
       }
 
       //Concatenate the integers (if they exist)
-      this.iPrice_LastThousandCount = 0;
       sTemp = '';
       if (aArr[0].length > 0)
       {
@@ -389,16 +353,13 @@ export class PW1FormMainComponent implements OnInit {
         {
           if ((i < (aArr[0].length-1)) && (((aArr[0].length-i-1)%3) == 0))
           {
-            sTemp = sThousandChar+sTemp;
-            iCaret += 1;
-            this.iPrice_LastThousandCount += 1;
+            //sTemp = sThousandChar+sTemp;
           }
           sTemp = aArr[0][i]+sTemp;
         }
       }else
       {
         sTemp += '0';
-        iCaret += 2;
       }
       sResult += sTemp;
 
@@ -416,11 +377,6 @@ export class PW1FormMainComponent implements OnInit {
       //Save the parsed price and restore the caret
       val.value = sResult;
 
-      if (iCaret < 0)
-      {
-        //We cannot select a negative position!
-        iCaret = 0;
-      }
       val.selectionStart = iCaret;
       val.selectionEnd = iCaret;
 
