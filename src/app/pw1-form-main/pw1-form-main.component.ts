@@ -19,6 +19,7 @@ export class PW1FormMainComponent implements OnInit {
   PW1_dateTimeError: string = '';
   bPrice_WasThousChar_LeftCaretSide: boolean;
   bPrice_WasDecChar_LeftCaretSide: boolean;
+  bPrice_WasThousChar_RightCaretSide: boolean;
   bPrice_WasDecChar_RightCaretSide: boolean;
   iPrice_LastCaretPos: number;
 
@@ -234,6 +235,7 @@ export class PW1FormMainComponent implements OnInit {
 
     this.bPrice_WasThousChar_LeftCaretSide = (val.value[val.selectionStart-1] && (val.value[val.selectionStart-1] == sThousandChar));
     this.bPrice_WasDecChar_LeftCaretSide = (val.value[val.selectionStart-1] && (val.value[val.selectionStart-1] == sDecimalChar));
+    this.bPrice_WasThousChar_RightCaretSide = (val.value[val.selectionStart] && (val.value[val.selectionStart] == sThousandChar));
     this.bPrice_WasDecChar_RightCaretSide = (val.value[val.selectionStart] && (val.value[val.selectionStart] == sDecimalChar));
 
     //Ignore the negative sign
@@ -267,7 +269,7 @@ export class PW1FormMainComponent implements OnInit {
   PW1_ValidatePrice(val: any) //Doesn't actually validate anything; it is instead passed onInput, so that we can use the element ref to fix its value on the fly
   {
     var
-      i: number, iCaret: number,
+      i: number, iTemp: number, iCaret: number,
       sTemp: string, sResult: string,
       sTxt: any = val.value,
       aArr: string[] = [''],
@@ -325,15 +327,28 @@ export class PW1FormMainComponent implements OnInit {
       if (this.PW1_data.price && (this.PW1_data.price.length == (sTxt.length+1)))
       {
         //sDecimalChar was deleted on the left
-        if (this.bPrice_WasDecChar_LeftCaretSide && (val.value[val.selectionStart-1] != sDecimalChar) && (val.value[val.selectionStart-1] != sThousandChar))
+        if (this.bPrice_WasDecChar_LeftCaretSide && (val.value[val.selectionStart-1] != sDecimalChar))
         {
           //Remove the last 2 digits from aArr[0] and add them as aArr[1]
           aArr.push(aArr[0][aArr[0].length-2]+''+aArr[0][aArr[0].length-1]);
           aArr[0] = aArr[0].substring(0, aArr[0].length-2);
         }
 
+        //sThousandChar was deleted on the left
+        if (this.bPrice_WasThousChar_LeftCaretSide && (val.value[val.selectionStart-1] != sThousandChar))
+        {
+          //Adjust the caret
+          if (iTemp)
+          {
+            iTemp -= 1;
+          }else
+          {
+            iTemp = -1;
+          }
+        }
+
         //sDecimalChar was deleted on the right
-        if (this.bPrice_WasDecChar_RightCaretSide && (val.value[val.selectionStart] != sDecimalChar) && (val.value[val.selectionStart] != sThousandChar))
+        if (this.bPrice_WasDecChar_RightCaretSide && (val.value[val.selectionStart] != sDecimalChar))
         {
           //Remove the last 2 digits from aArr[0] and add them as aArr[1]
           aArr.push(aArr[0][aArr[0].length-2]+''+aArr[0][aArr[0].length-1]);
@@ -342,10 +357,40 @@ export class PW1FormMainComponent implements OnInit {
           //Adjust the caret
           iCaret +=1;
         }
+
+        //Something was deleted on the left, while on the right there is and was an sThousandChar
+        if (this.bPrice_WasThousChar_RightCaretSide && (val.value[val.selectionStart] == sThousandChar))
+        {
+          //Adjust the caret
+          if (iTemp)
+          {
+            iTemp -= 1;
+          }else
+          {
+            iTemp = -1;
+          }
+        }
+
+        //Something was deleted on the left, while on the right there is and was an sDecimalChar and there were no integers
+        if ((aArr[0].length <= 0) && this.bPrice_WasDecChar_RightCaretSide && (val.value[val.selectionStart] == sDecimalChar))
+        {
+          //Adjust the caret
+          if (iTemp)
+          {
+            iTemp -= 1;
+          }else
+          {
+            iTemp = -1;
+          }
+        }
       }
 
       //Concatenate the integers (if they exist)
       sTemp = '';
+      if (!iTemp) //iTemp might have been assigned when detecting that sThousandChar (or something else) was deleted on the left
+      {
+        iTemp = 0; //Counts the sThousandChars added to the left of the current iCaret
+      }
       if (aArr[0].length > 0)
       {
         //They exist: add them, and also inject sThousandChar
@@ -353,15 +398,30 @@ export class PW1FormMainComponent implements OnInit {
         {
           if ((i < (aArr[0].length-1)) && (((aArr[0].length-i-1)%3) == 0))
           {
-            //sTemp = sThousandChar+sTemp;
+            sTemp = sThousandChar+sTemp;
+
+            //Adjust the caret if needed
+            if (iCaret > (sResult.length+i))
+            {
+              iTemp +=1;
+            }
           }
           sTemp = aArr[0][i]+sTemp;
         }
       }else
       {
         sTemp += '0';
+        
+        if (aArr.length < 2)
+        {
+          iTemp +=2; //The user just wrote something different from the sDecChar
+        }else
+        {
+          iTemp +=1; //The user just wrote the sDecChar
+        }
       }
       sResult += sTemp;
+      iCaret += iTemp;
 
       //Concatenate the decimals (+ make sure that they exist)
       if (aArr.length < 2)
