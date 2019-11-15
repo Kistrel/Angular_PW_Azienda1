@@ -73,8 +73,14 @@ export class WorkerDataService {
 
   sendData(oData: PW1FormData)
   {
-    this.iLastPostResponse = 0; //Sending; also locks the form
+    //Sending; also locks the form
+    this.iLastPostResponse = 0;
 
+    //For testing purposes, logs the data sent
+    console.log('Data sent:');
+    console.log(oData);
+
+    //Actual request
     this.http.post(this.postUrl, oData, this.getHttpOptions()).subscribe(
       (aResponse: any) => //Success
       {
@@ -93,9 +99,5 @@ export class WorkerDataService {
         console.log(aResponse);
       }
     );
-
-    //For testing purposes, logs the data sent
-    console.log('Data sent:');
-    console.log(oData);
   }
 }
