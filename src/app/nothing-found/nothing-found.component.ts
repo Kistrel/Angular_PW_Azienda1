@@ -12,6 +12,7 @@ export class NothingFoundComponent implements OnInit {
   selfPos_Curr: number[] = [0, 0];
   selfPos_CurrEdge: number;
   selfBackColor: number[] = [255, 255, 255];
+  selfOrderColor: number[] = [];
 
   selfTransition_Color: number = 2.0;
   selfTransition_Position: number = 2.0;
@@ -317,22 +318,30 @@ export class NothingFoundComponent implements OnInit {
   setNewColor()
   {
     var
-      iTemp: number = this.randomQty(255),
-      iID: number = this.randomQty(3),
-      iNewVal: number;
+      aTemp: number[],
+      i: number, i2: number, iID: number, iNewVal: number;
 
-    if (Math.abs(this.selfBackColor[iID]-iTemp) <= 50) //This would fail for 127.5, but this particular value shouldn't ever come up
+    //Make sure there's an iID to get: shuffle the possibilities
+    if (this.selfOrderColor.length <= 0)
     {
-      if (iTemp > 127)
+      aTemp = [0, 1, 2];
+      for (i = aTemp.length-1; i >= 0; i--)
       {
-        iNewVal = iTemp-100;
-      }else
-      {
-        iNewVal = iTemp+100;
+        iID = this.randomQty(i+1);
+        this.selfOrderColor.push(aTemp[iID]);
+        aTemp[iID] = aTemp[i];
       }
-    }else
+    }
+
+    //Get iID
+    iID = this.selfOrderColor[this.selfOrderColor.length-1];
+    this.selfOrderColor.pop();
+
+    //Get the new color
+    iNewVal = this.selfBackColor[iID]+50+this.randomQty(157); //Min +50, max +206
+    if (iNewVal > 255)
     {
-      iNewVal = iTemp;
+      iNewVal -= 256;
     }
 
     this.selfTransition_Color = Math.round(10*Math.abs(iNewVal-this.selfBackColor[iID])/75)/10;
